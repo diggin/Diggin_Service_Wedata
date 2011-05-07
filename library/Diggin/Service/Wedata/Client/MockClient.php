@@ -4,7 +4,8 @@ namespace Diggin\Service\Wedata\Client;
 
 use Diggin\Service\Wedata\Wedata,
     Diggin\Service\Wedata\Client,
-    Diggin\Service\Wedata\Databases;
+    Diggin\Service\Wedata\Databases,
+    Diggin\Service\Wedata\Items;
 
 class MockClient implements Client
 {
@@ -26,6 +27,6 @@ class MockClient implements Client
         $response = array_pop(func_get_args());
         $decode = json_decode($response->getBody());
 
-        return $decode;
+        return new Items($decode);
     }
 }

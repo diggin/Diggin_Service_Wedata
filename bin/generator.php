@@ -16,10 +16,10 @@ $response = Zend\Http\Response::fromString($responseString);
 $client = new MockClient;
 $databases = $client->getDatabases($response);
 
+//var_dump($response);die;
 //var_dump($databases);die;
-//var_dump(iterator_to_array($databases));
-//die;
+//var_dump(iterator_to_array($databases));die;
 
-$generated = EntityGenerator::generateAll(__DIR__, $databases);
+$generated = EntityGenerator::generateAll(__DIR__.'/generated', $databases);
 
 var_dump($generated);

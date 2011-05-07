@@ -16,4 +16,4 @@ $response = Zend\Http\Response::fromString($responseString);
 $client = new MockClient;
 $items = $client->getItems('AutoPagerize', 1, $response);
 
-var_dump($items);
+var_dump(iterator_to_array($items));

@@ -4,6 +4,7 @@ namespace Diggin\Service\Wedata\Client;
 
 use Diggin\Service\Wedata\Wedata,
     Diggin\Service\Wedata\Client,
+    Diggin\Service\Wedata\Database,
     Zend\Service\AbstractService;
 
 /**

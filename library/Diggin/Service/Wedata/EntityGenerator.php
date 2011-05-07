@@ -2,9 +2,9 @@
 
 namespace Diggin\Service\Wedata;
 
-use Diggin\Service\Wedata\ServiceClient,
-    Zend\Filter\FilterChain,
-    Zend\Filter\Word\SeparatorToCamelCase;
+use Diggin\Service\Wedata\Wedata,
+    Diggin\Service\Wedata\ServiceClient,
+    Zend\CodeGenerator\Php as PhpCodeGenerator;
 
 /**
  *  Item Data Entity Generator
@@ -12,6 +12,10 @@ use Diggin\Service\Wedata\ServiceClient,
 class EntityGenerator
 {
     private $filterChain;
+
+    public static $itemdata_namespace = 'Diggin\\Service\\Wedata\\ItemData';
+    public static $ignore_database = 
+        array('AustralianConservative', 'blog sina');
 
     /**
      * @param string Output Directory path
@@ -29,6 +33,9 @@ class EntityGenerator
 
         $generatedMaps = array();
         foreach ($databases as $database) {
+            if (in_array($database->getName(), static::$ignore_database)) {
+                continue;
+            }
             $generatedMaps[$database->getName()] = $entityGenerator->generate($outputDirectory, $database);
         }
 
@@ -37,24 +44,53 @@ class EntityGenerator
 
     public function generate($outputDirectory, Database $database)
     {
-        $className = $this->filterName($database->getName());
+        $className = Wedata::filterDatabaseName($database->getName());
         $file = $className.'.php';
+        $path = $outputDirectory.DIRECTORY_SEPARATOR.$file;
 
-        return $outputDirectory.DIRECTORY_SEPARATOR.$file;
-    }
+        $codegenFile = new PhpCodeGenerator\PhpFile;
+        $codegenFile->setFileName($path);
+        $codegenFile->setNamespace(static::$itemdata_namespace);
+        
+        $codegenClass = new PhpCodeGenerator\PhpClass;
+        $codegenClass->setName($className);
+        $tableName = strtolower($className);
+        $codegenClass->setDocblock(<<<DOCBLOCK
+@Entity @Table(name="wedata_$tableName")
+DOCBLOCK
+);
 
-    protected function filterName($name)
-    {
-        if (!$this->filterChain) {
-            $filterChain = new FilterChain;
-            $filterChain->attach(new SeparatorToCamelCase('_'));
-            $filterChain->attach(new SeparatorToCamelCase(' '));
-            $filterChain->attach(new SeparatorToCamelCase('-'));
-            $filterChain->attach(function ($var){return rawurlencode($var);});
-            $filterChain->attach(function ($var){return str_replace('%', '',$var);});
-            $this->filterChain = $filterChain;
+        $requiredKeys = $database->getRequiredKeysAsArray();
+        $optionalKeys = $database->getOptionalKeysAsArray();
+
+        if (in_array('item_id', $requiredKeys + $optionalKeys)) {
+            throw new Exception('Database has item_id as key');
         }
 
-        return $this->filterChain->filter($name);
+        $codegenClass->setProperty(array(
+            'name' => 'item_id',
+            'visibility' => 'private',
+            'docblock' => '@Id @Column(type="integer")'
+        ));
+
+        //set Required Keys
+        static::addProperties($requiredKeys, $codegenClass);
+        static::addProperties($optionalKeys, $codegenClass);
+
+        $codegenFile->setClass($codegenClass);
+        $codegenFile->write();
+
+        return $path;
+    }
+
+    protected static function addProperties($keys, PhpCodeGenerator\PhpClass $codegenClass)
+    {
+        foreach ($keys as $key) {
+            $codegenClass->setProperty(array(
+                'name' => $key,
+                'visibility' => 'private',
+                'docblock' => '@Column(type="string", length=200)'
+            ));
+        }
     }
 }
