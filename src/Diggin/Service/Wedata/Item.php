@@ -6,7 +6,22 @@ use Zend\Loader;
 class Item
 {
     private $name;
+    private $resource_url;
+    private $updated_at;
+    private $created_by;
+    private $database_resource_url;
     private $data;
+    private $created_at;
+
+    public static function fromObject(\stdClass $data)
+    {
+        $item = new static;
+        $item->setName($data->name);
+        $item->setResourceUrl($data->resource_url);
+
+        return $item;
+    }
+
 
     public function setName($name)
     {
@@ -18,19 +33,25 @@ class Item
         return $this->name;
     }
 
+    public function setResourceUrl($url)
+    {
+        $this->resource_url = $url;
+    }
+
     public function getResourceUrl()
     {
+        return $this->resource_url;
     }
 
     public function setData($data)
     {
         $this->data = $data;
     }
-                            
 
     public function getData()
     {}
 
+    // getDataMapper
     public function getDataEntity()
     {
         $databaseName = $this->retrieveDatabase();

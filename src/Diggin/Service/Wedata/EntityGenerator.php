@@ -2,7 +2,7 @@
 
 namespace Diggin\Service\Wedata;
 
-use Diggin\Service\Wedata\Wedata,
+use Diggin\Service\Wedata\Filter,
     Diggin\Service\Wedata\ServiceClient,
     Zend\CodeGenerator\Php as PhpCodeGenerator;
 
@@ -44,7 +44,7 @@ class EntityGenerator
 
     public function generate($outputDirectory, Database $database)
     {
-        $className = Wedata::filterDatabaseName($database->getName());
+        $className = Filter::filterDatabaseName($database->getName());
         $file = $className.'.php';
         $path = $outputDirectory.DIRECTORY_SEPARATOR.$file;
 

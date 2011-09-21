@@ -5,6 +5,6 @@ Diggin_Service_Wedata
 Currently, this repositories is developing now!
 Don't TRY THIS!
 
-Please Use bellow.(PHP 5.2 Zend Framework1 version.)
+Please Use bellow.(for PHP 5.2 & Zend Framework 1)
 http://openpear.org/package/Diggin
 
