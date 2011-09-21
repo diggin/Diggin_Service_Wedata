@@ -1,5 +1,7 @@
 <?php
+
 namespace Diggin\Service\Wedata;
+
 use Diggin\Service\Wedata\Storage\Adapter;
 
 class Storage implements Adapter;
@@ -18,15 +20,7 @@ class Storage implements Adapter;
 
     public function searchItem($database, $key, $term)
     {
-        
+        return $this->getAdapter()->searchItem($database, $key, $term);
     }
-
 }
 
-/**
-interface Storage
-{
-    public function __construct(Adapter $adapter = null);
-    public function storeItems($database, $items);
-    public function searchItem($database, $key, $term);
-}*/
