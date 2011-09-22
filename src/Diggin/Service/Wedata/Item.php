@@ -18,6 +18,11 @@ class Item
         $item = new static;
         $item->setName($data->name);
         $item->setResourceUrl($data->resource_url);
+        $item->setUpdatedAt($data->updated_at);
+        $item->setCreatedBy($data->created_by);
+        $item->setDatabaseResourceUrl($data->database_resource_url);
+        $item->setData($data->data);
+        $item->setCreatedAt($data->created_at);
 
         return $item;
     }
@@ -42,13 +47,55 @@ class Item
         return $this->resource_url;
     }
 
+    public function setUpdatedAt($updated_at)
+    {
+        $this->updated_at = $updated_at;
+    }
+
+    public function getUpdatedAt()
+    {
+        return $this->updated_at;
+    }
+
+    public function setCreatedBy($created_by)
+    {
+        $this->created_by = $created_by;
+    }
+
+    public function getCreatedBy()
+    {
+        return $this->created_by;
+    }
+
+    public function setDatabaseResourceUrl($database_resource_url)
+    {
+        $this->database_resource_url = $database_resource_url;
+    }
+
+    public function getDatabaseResourceUrl()
+    {
+        return $this->database_resource_url;
+    }
+
     public function setData($data)
     {
         $this->data = $data;
     }
 
     public function getData()
-    {}
+    {
+        return $this->data;
+    }
+
+    public function setCreatedAt($created_at)
+    {
+        $this->created_at = $created_at;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
 
     // getDataMapper
     public function getDataEntity()
