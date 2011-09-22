@@ -11,13 +11,15 @@ class Cache implements Adapter
 
     private $frontend;
 
+    private $ignorepattern_itemdata;
+
     public function __construct(Frontend $frontend)
     {
         $this->frontend = $frontend;
     }
 
     /**
-     * NOTES: not support with page
+     * NOTES: cache adapter not support paging
      */
     public function storeItems($database, $items)
     {
@@ -43,11 +45,19 @@ class Cache implements Adapter
         return false;
     }
 
-    // public function searchItemData($database, $key, $term, $callback_ignore_case)
+    public function ignorePatternItemData($pattern)
+    {
+        $this->ignorepattern_itemdata = $pattern;
+    }
+
     public function searchItemData($database, $key, $term)
     {
         $key = $this->filterCacheKey($database);
         $items = $this->frontend->load($key);
+
+        //if ($this->ignorepattern_itemdata) {
+        //    $items = new CallbackFilterIterator($items, $this->ignorepattern_itemdata);
+        //}
 
         foreach ($items as $item) {
             $data = $item->getData();
