@@ -97,7 +97,21 @@ class Item
         return $this->created_at;
     }
 
-    // getDataMapper
+    public function retrieveId()
+    {
+        $resourceUrl = $this->getResourceUrl();
+        preg_match('#items/([0-9]+)$#', $resourceUrl, $m);
+        return $m[1];
+    }
+
+    public function retrieveDatabaseName()
+    {
+        $resourceUrl = $this->getDatabaseResourceUrl();
+        preg_match('#(?:databases/)(.*)$#', $resourceUrl, $m);
+        return $m[1];
+    }
+
+    // @todo
     public function getDataEntity()
     {
         $databaseName = $this->retrieveDatabase();
@@ -113,16 +127,6 @@ class Item
         $itemData->setId($this->retrieveId());
 
         return $itemData;
-    }
-
-    public function retrieveId()
-    {
-        $resourceUrl = $this->getResourceUrl();
-        return ;//末尾;
-    }
-
-    public function retrieveDatabase()
-    {
     }
 
     protected function loadClassFile($databaseName)

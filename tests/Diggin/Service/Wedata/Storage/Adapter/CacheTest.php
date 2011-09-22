@@ -20,7 +20,9 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $adapter = new Cache($this->factoryCache());
     
-        //var_dump($adapter->searchItem('AutoPagerize', '.*Decay'));
+        $item = $adapter->searchItem('AutoPagerize', '.*Decay');
+
+        //var_dump($item->retrieveDatabaseName());
     }
 
     protected function factoryCache()
