@@ -9,10 +9,6 @@ class Items extends ArrayIterator
     public function current()
     {
         $stdObject = parent::current();
-        $item = new Item();
-        $item->setName($stdObject->name);
-        $item->setData($stdObject->data);
-
-        return $item;
+        return Item::fromObject($stdObject);
     }
 }

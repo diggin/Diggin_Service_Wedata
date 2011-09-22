@@ -65,7 +65,9 @@ class ServiceClient extends AbstractService implements Client
             throw new UnexcpetedValueException();
         }
 
-        if (is_numeric($page)) {
+        if ($page === null) {
+            $params = array();
+        } else if (is_numeric($page)) {
             $params = array(static::KEY_PAGE => $page);
         } else {
             throw new Exception("currently parameter not set 'page'");
