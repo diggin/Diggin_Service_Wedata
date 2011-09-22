@@ -1,5 +1,4 @@
 <?php
-
 namespace Diggin\Service\Wedata\Client;
 
 use Diggin\Service\Wedata\Client,
@@ -25,7 +24,9 @@ class ServiceClient extends AbstractService implements Client
      */
     public function getDatabases($page = 1)
     {
-        if (is_int($page)) {
+        if ($page === null) {
+            $params = array();
+        } else if (is_numeric($page)) {
             $params = array(static::KEY_PAGE => $page);
         } else {
             throw new Exception("currently parameter not set 'page'");
@@ -64,7 +65,7 @@ class ServiceClient extends AbstractService implements Client
             throw new UnexcpetedValueException();
         }
 
-        if (is_int($page)) {
+        if (is_numeric($page)) {
             $params = array(static::KEY_PAGE => $page);
         } else {
             throw new Exception("currently parameter not set 'page'");
@@ -78,9 +79,10 @@ class ServiceClient extends AbstractService implements Client
 
     public function getItem($itemId /*, $dataMapperManager */)
     {
-        if (!is_int($itemId)) {
+        if (!is_numeric($itemId)) {
             throw new Exception("");
         }
+
         $path = sprintf(static::PATH_GET_ITEM, $itemId);
         $responseBody = $this->makeRequest($path, Request::METHOD_GET);
 

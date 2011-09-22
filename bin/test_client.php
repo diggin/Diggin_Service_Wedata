@@ -23,8 +23,18 @@ if (!isset($argv[1])) {
 }
 
 array_shift($argv); //this script 
-array_shift($argv); //method
+array_shift($argv); //methods
+
+// filter numeric to int
+$new_args = array();
+foreach ($argv as $v) {
+    if (is_numeric($v)) {
+        $new_args[] = (int) $v;
+    } else {
+        $new_args[] = $v;
+    }
+}
 
 $client = new ServiceClient;
-$ret = call_user_func_array(array($client, $method), $argv);
+$ret = call_user_func_array(array($client, $method), $new_args);
 var_dump($ret);
