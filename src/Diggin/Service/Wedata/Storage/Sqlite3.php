@@ -1,10 +1,10 @@
 <?php
 
-namespace Diggin\Service\Wedata\Storage\Adapter;
-use Diggin\Service\Wedata\Storage\Adapter,
+namespace Diggin\Service\Wedata\Storage;
+use Diggin\Service\Wedata\Storage,
     SQLite3 as SQLite3Obj;
 
-class Sqlite3 implements Adapter
+class Sqlite3 implements Storage
 {
     private $sqlite3;
 
