@@ -3,6 +3,7 @@
 namespace Diggin\Service\Wedata\Storage;
 use Diggin\Service\Wedata\Storage,
     Diggin\Service\Wedata\Database,
+    Diggin\Service\Wedata\CallbackFilterIterator,
     Diggin\Service\Wedata\Exception,
     Zend\Cache\Frontend;
 
@@ -12,11 +13,27 @@ class Cache implements Storage
 
     private $frontend;
 
-    private $ignorepattern_itemdata;
+    private $searchitemdata_ignore;
 
     public function __construct(Frontend $frontend)
     {
         $this->frontend = $frontend;
+    }
+    
+    public function setSearchItemDataIgnore($callback)
+    {
+        $this->searchitemdata_ignore = $callback;
+    }
+
+    public function getItems($database)
+    {
+        $key = $this->filterCacheKey($database);
+
+        if(!$this->frontend->test($key)) {
+            throw new Exception\RuntimeException('not stored');
+        }
+
+        return $this->frontend->load($key);
     }
 
     /**
@@ -51,23 +68,18 @@ class Cache implements Storage
         return false;
     }
 
-    public function ignorePatternItemData($pattern)
-    {
-        $this->ignorepattern_itemdata = $pattern;
-    }
-
     public function searchItemData($database, $key, $term)
     {
-        $key = $this->filterCacheKey($database);
-        $items = $this->frontend->load($key);
+        $cachekey = $this->filterCacheKey($database);
+        $items = $this->frontend->load($cachekey);
 
-        //if ($this->ignorepattern_itemdata) {
-        //    $items = new CallbackFilterIterator($items, $this->ignorepattern_itemdata);
-        //}
+        if ($this->searchitemdata_ignore) {
+            $items = new CallbackFilterIterator($items, $this->searchitemdata_ignore);
+        }
 
         foreach ($items as $item) {
             $data = $item->getData();
-            if(preg_match('>'.$term.'>', $data->$key)) {
+            if(preg_match('>'.$data->$key.'>', $term)) {
                 return $item;
             }
         }

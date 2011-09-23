@@ -11,9 +11,9 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     public function testStoreItems()
     {
         $adapter = new Cache($this->factoryCache());
-
-        //var_dump($this->getItems());
         $adapter->storeItems('AutoPagerize', $this->getItems());
+
+        $this->assertEquals($this->getItems(), $adapter->getItems('AutoPagerize'));
     }
 
     public function testSearchItem()
@@ -22,20 +22,35 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     
         $item = $adapter->searchItem('AutoPagerize', '.*Decay');
 
-        //var_dump($item->retrieveDatabaseName());
+        $this->assertEquals('Urban Decay', $item->getName());
     }
 
-    protected function factoryCache()
+    public function testSearchItemData()
+    {
+        $adapter = new Cache($this->factoryCache());
+        $item = $adapter->searchItemData('AutoPagerize', 'url', 'http://magazine.kakaku.com/mag/page?');
+        $this->assertEquals('mimi-neko', $item->getCreatedBy());
+
+        $adapter->setSearchItemDataIgnore(function ($current, $key, $iterator) {
+           return 'mimi-neko' != $current->getCreatedBy();                               
+        });
+
+        $item = $adapter->searchItemData('AutoPagerize', 'url', 'http://magazine.kakaku.com/mag/page?');
+
+        $this->assertFalse($item);
+    }
+
+    public function factoryCache()
     {
         $frontendOptions = array(
-            'lifetime' =>  86400,
+            'lifetime' => 86400,
             'automatic_serialization' => true,
         );
 
         $backendOptions = array(
             'cache_dir' => __DIR__.'/_files'
         );
-
+        
         $frontend = ZFCache::factory('Core', 'File', $frontendOptions, $backendOptions);
 
         return $frontend;
