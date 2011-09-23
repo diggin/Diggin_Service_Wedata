@@ -1,8 +1,8 @@
 <?php
 
-namespace DigginTests\Service\Wedata\Storage\Adapter;
+namespace DigginTests\Service\Wedata\Storage;
 
-use Diggin\Service\Wedata\Storage\Adapter\Cache;
+use Diggin\Service\Wedata\Storage\Cache;
 
 use Zend\Cache\Cache as ZFCache;
 
@@ -13,7 +13,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $adapter = new Cache($this->factoryCache());
 
         //var_dump($this->getItems());
-        //$adapter->storeItems('AutoPagerize', $this->getItems());
+        $adapter->storeItems('AutoPagerize', $this->getItems());
     }
 
     public function testSearchItem()

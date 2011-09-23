@@ -1,11 +1,12 @@
 <?php
 
-namespace Diggin\Service\Wedata\Storage\Adapter;
-use Diggin\Service\Wedata\Storage\Adapter,
+namespace Diggin\Service\Wedata\Storage;
+use Diggin\Service\Wedata\Storage,
     Diggin\Service\Wedata\Database,
+    Diggin\Service\Wedata\Exception,
     Zend\Cache\Frontend;
 
-class Cache implements Adapter
+class Cache implements Storage
 {
     private $cache_prefix = 'diggin_wedata_';
 
@@ -34,6 +35,11 @@ class Cache implements Adapter
     public function searchItem($database, $name)
     {
         $key = $this->filterCacheKey($database);
+
+        if(!$this->frontend->test($key)) {
+            throw new Exception\RuntimeException('not stored');
+        }
+
         $items = $this->frontend->load($key);
 
         foreach ($items as $item) {
