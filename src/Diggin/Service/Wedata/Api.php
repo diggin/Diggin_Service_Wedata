@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * @namespace
+ */
 namespace Diggin\Service\Wedata;
 
+/**
+ * Service Api interface of Wedata
+ *
+ * @see http://wedata.net/help/api
+ */
 interface Api
 {
     const API_URL = 'http://wedata.net';

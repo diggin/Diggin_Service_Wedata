@@ -6,6 +6,7 @@ use Diggin\Service\Wedata\Api,
     Diggin\Service\Wedata\Database,
     Diggin\Service\Wedata\Items,
     Diggin\Service\Wedata\Item,
+    Diggin\Service\Wedata\Exception,
     Zend\Json\Json,
     Zend\Uri\UriFactory,
     Zend\Http\Request,
@@ -29,7 +30,7 @@ class Client extends AbstractService implements Api
         } else if (is_numeric($page)) {
             $params = array(static::KEY_PAGE => $page);
         } else {
-            throw new Exception("currently parameter not set 'page'");
+            throw new Exception\InvalidArgumentException("currently parameter not set 'page'");
         }
         $responseBody = $this->makeRequest(static::PATH_GET_DATABASES, Request::METHOD_GET, $params);
         
@@ -46,7 +47,7 @@ class Client extends AbstractService implements Api
     public function getDatabase($databaseName)
     {
         if (!is_string($databaseName)) {
-            throw new UnexcpetedValueException();
+            throw new Exception\InvalidArgumentException();
         }
         
         $path = sprintf(static::PATH_GET_DATABASE, rawurlencode($databaseName));
@@ -62,7 +63,7 @@ class Client extends AbstractService implements Api
         }
 
         if (!is_string($database)) {
-            throw new UnexcpetedValueException();
+            throw new Exception\InvalidArgumentException();
         }
 
         if ($page === null) {
@@ -70,7 +71,7 @@ class Client extends AbstractService implements Api
         } else if (is_numeric($page)) {
             $params = array(static::KEY_PAGE => $page);
         } else {
-            throw new Exception("currently parameter not set 'page'");
+            throw new Exception\InvalidArgumentException("currently parameter not set 'page'");
         }
         
         $path = sprintf(static::PATH_GET_ITEMS, rawurlencode($database));
@@ -82,7 +83,7 @@ class Client extends AbstractService implements Api
     public function getItem($itemId /*, $dataMapperManager */)
     {
         if (!is_numeric($itemId)) {
-            throw new Exception("");
+            throw new Exception\InvalidArgumentException("");
         }
 
         $path = sprintf(static::PATH_GET_ITEM, $itemId);
@@ -124,7 +125,7 @@ class Client extends AbstractService implements Api
         $response = $client->send();
         
         if (!$response->isSuccess()) {
-             throw new Exception("Http client reported an error: '{$response->getMessage()}'");
+             throw new Exception\UnexpectedValueException("Http client reported an error: '{$response->getMessage()}'");
         }
         
         //return response switching by Reqest Method
