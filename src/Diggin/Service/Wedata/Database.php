@@ -75,6 +75,16 @@ class Database
      */
     private $created_at;
 
+    public function __construct($data)
+    {
+        $setter = function($key) {
+            return "set".preg_replace(array('#('.preg_quote('_').')([A-Za-z]{1})#e','#(^[A-Za-z]{1})#e'), array("strtoupper('\\2')","strtoupper('\\1')"), $key);
+        };
+
+        foreach ($data as $k => $v) {
+            $this->{$setter($k)}($v);
+        }
+    }
 
     /**
      * Set name
@@ -264,5 +274,22 @@ class Database
     public function getOptionalKeysAsArray()
     {
         return array_unique(array_filter(preg_split('/ /', $this->getOptionalKeys())));
+    }
+
+    public function toApiArray()
+    {
+        $array = array();
+        foreach (array(
+            'name' => 'getName',
+            'optional_keys' => 'getOptionalKeys',
+            'required_keys' => 'getRequiredKeys',
+            'description' => 'getDescription',
+            'permit_other_keys' => 'getPermitOtherKeys',
+            'resource_url' => 'getResourceUrl'
+        ) as $k => $getter) {
+            if ($val = $this->$getter()) $array[$k] = $val;
+        }
+
+        return $array;
     }
 }

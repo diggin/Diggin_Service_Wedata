@@ -33,6 +33,23 @@ interface Api
     const PATH_UPDATE_ITEM = '/items/%s'; //item id
     const PATH_DELETE_ITEM = '/items/%s'; //item id
 
+    /**
     public function getDatabases($page = 1);
+    public function getDatabase($databaseName = null, $page = null);
+    public function createDatabase(array $params = array());
+    public function udpateDatabase(array $params = null, $databaseName = null);
+
+    // @apikey 
+    public function deleteDatabase($databaseName = null);
+
     public function getItems($database, $page = 1);
+    public function getItem($itemId, $page = null);
+    public function insertItem(array $params = array(), $databaseName = null);
+
+    // @apikey
+    public function updateItem($itemId, array $params = array());
+
+    //@apikey
+    public function deleteItem($itemId);
+    */
 }
