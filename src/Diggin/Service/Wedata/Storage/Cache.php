@@ -5,35 +5,35 @@ use Diggin\Service\Wedata\Storage,
     Diggin\Service\Wedata\Database,
     Diggin\Service\Wedata\CallbackFilterIterator,
     Diggin\Service\Wedata\Exception,
-    Zend\Cache\Frontend;
+    Zend\Cache\Storage\Adapter as StorageAdapter;
 
 class Cache implements Storage
 {
-    private $cache_prefix = 'diggin_wedata_';
+    private $cachePrefix = 'diggin_wedata_';
 
-    private $frontend;
+    private $storageAdapter;
 
-    private $searchitemdata_ignore;
+    private $searchItemdataIgnore;
 
-    public function __construct(Frontend $frontend)
+    public function __construct(StorageAdapter $storageAdapter)
     {
-        $this->frontend = $frontend;
+        $this->storageAdapter = $storageAdapter;
     }
     
     public function setSearchItemDataIgnore($callback)
     {
-        $this->searchitemdata_ignore = $callback;
+        $this->searchItemdataIgnore = $callback;
     }
 
     public function getItems($database)
     {
         $key = $this->filterCacheKey($database);
 
-        if(!$this->frontend->test($key)) {
+        if(!$this->storageAdapter->hasItem($key)) {
             throw new Exception\RuntimeException('not stored');
         }
 
-        return $this->frontend->load($key);
+        return $this->storageAdapter->getItem($key);
     }
 
     /**
@@ -43,7 +43,7 @@ class Cache implements Storage
     {
         $key = $this->filterCacheKey($database);
 
-        $this->frontend->save($items, $key);
+        $this->storageAdapter->setItem($key, $items);
     }
 
     /**
@@ -53,11 +53,11 @@ class Cache implements Storage
     {
         $key = $this->filterCacheKey($database);
 
-        if(!$this->frontend->test($key)) {
+        if (!$this->storageAdapter->hasItem($key)) {
             throw new Exception\RuntimeException('not stored');
         }
 
-        $items = $this->frontend->load($key);
+        $items = $this->storageAdapter->getItem($key);
 
         foreach ($items as $item) {
             if(preg_match('>'.$name.'>', $item->getName())) {
@@ -71,10 +71,10 @@ class Cache implements Storage
     public function searchItemData($database, $key, $term)
     {
         $cachekey = $this->filterCacheKey($database);
-        $items = $this->frontend->load($cachekey);
+        $items = $this->storageAdapter->getItem($cachekey);
 
-        if ($this->searchitemdata_ignore) {
-            $items = new CallbackFilterIterator($items, $this->searchitemdata_ignore);
+        if ($this->searchItemdataIgnore) {
+            $items = new CallbackFilterIterator($items, $this->searchItemdataIgnore);
         }
 
         foreach ($items as $item) {
@@ -93,9 +93,9 @@ class Cache implements Storage
             $database = $database->getName();
         } 
         if (!is_string($database)) {
-            throw new Exception;
+            throw new Exception\InvalidArgumentException('$database should be Diggin\Service\Wedata\Database object or string');
         }
 
-        return $this->cache_prefix.$database;
+        return $this->cachePrefix.$database;
     }
 }

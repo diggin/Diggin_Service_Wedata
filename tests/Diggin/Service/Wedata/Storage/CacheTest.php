@@ -2,9 +2,8 @@
 
 namespace DigginTests\Service\Wedata\Storage;
 
-use Diggin\Service\Wedata\Storage\Cache;
-
-use Zend\Cache\Cache as ZFCache;
+use Diggin\Service\Wedata\Storage\Cache,
+    Zend\Cache\StorageFactory as CacheStorageFactory;
 
 class CacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -42,18 +41,20 @@ class CacheTest extends \PHPUnit_Framework_TestCase
 
     public function factoryCache()
     {
-        $frontendOptions = array(
-            'lifetime' => 86400,
-            'automatic_serialization' => true,
-        );
+        $cacheStorageAdapter = CacheStorageFactory::factory(array(
+            'adapter' => array(
+                'name' => 'Filesystem',
+                'options' => array(
+                    'cache_dir' => __DIR__.'/_files',
+                     //'ttl' => 86400
+                     )
+                ),
+            'plugins' => array(
+                    'serializer'
+                )
+            ));
 
-        $backendOptions = array(
-            'cache_dir' => __DIR__.'/_files'
-        );
-        
-        $frontend = ZFCache::factory('Core', 'File', $frontendOptions, $backendOptions);
-
-        return $frontend;
+        return $cacheStorageAdapter;
     }
 
     protected function getItems()

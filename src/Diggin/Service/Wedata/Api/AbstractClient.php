@@ -7,6 +7,7 @@ use Diggin\Service\Wedata\Api,
     Diggin\Service\Wedata\Items,
     Diggin\Service\Wedata\Item,
     Diggin\Service\Wedata\Exception;
+    // MissingApiKeyException extends \LogicException
 
 /**
  * Wedata Service API Client
@@ -69,7 +70,7 @@ abstract class AbstractClient implements Api
         if ($this->apiKey) {
             $params[static::KEY_APIKEY] = $this->apiKey;
         } else {
-            throw new Exception('API key is not set ');
+            throw new Exception\MissingApiKeyException('API key is not set ');
         }
 
         if ($database instanceof Database) {
@@ -83,9 +84,9 @@ abstract class AbstractClient implements Api
         }
 
         if (!isset($params['database']['name'])) {
-            throw new Exception('Database name is not set ');
+            throw new Exception\InvalidArgumentException('Database name is not set ');
         } elseif (!isset($params['database']['required_keys'])) {
-            throw new Exception('required_keys is not set');
+            throw new Exception\InvalidArgumentException('required_keys is not set');
         }
 
         $result = $this->makeRequest(static::PATH_CREATE_DATABASE, 'POST', $params);
@@ -105,7 +106,7 @@ abstract class AbstractClient implements Api
         if ($this->apiKey) {
             $params[static::KEY_APIKEY] = $this->apiKey;
         } else {
-            throw new Exception('API key is not set ');
+            throw new Exception\MissingApiKeyException('API key is not set ');
         }
 
         if ($database instanceof Database) {
@@ -115,11 +116,11 @@ abstract class AbstractClient implements Api
             $databaseName = $database;
             $params['database'] = $databaseParams;
         } else {            
-            throw new Exception();
+            throw new Exception\InvalidArgumentException('$database should be '.__NAMESPACE__.'\\Database object or string');
         }
 
         if (!isset($params['database']['required_keys'])) {
-            throw new Exception('required_keys is not set');
+            throw new Exception\InvalidArgumentException('required_keys is not set');
         }
 
         $path = sprintf(static::PATH_UPDATE_DATABASE, rawurlencode($databaseName));
@@ -136,7 +137,7 @@ abstract class AbstractClient implements Api
         if ($this->apiKey) {
             $params[static::KEY_APIKEY] = $this->apiKey;
         } else {
-            throw new Exception('API key is not set ');
+            throw new Exception\MissingApiKeyException('API key is not set ');
         }
 
         if ($database instanceof Database) {
@@ -144,7 +145,7 @@ abstract class AbstractClient implements Api
         } else if (is_sting($database)) {
             $databaseName = $database;
         } else {            
-            throw new Exception();
+            throw new Exception\InvalidArgumentException('$database should be '.__NAMESPACE__.'\\Database object or string');
         }
 
         $path = sprintf(self::PATH_DELETE_DATABASE, rawurlencode($databaseName));
@@ -162,7 +163,7 @@ abstract class AbstractClient implements Api
         }
 
         if (!is_string($database)) {
-            throw new Exception\InvalidArgumentException();
+            throw new Exception\InvalidArgumentException('$database should be '.__NAMESPACE__.'\\Database object or string');
         }
 
         if ($page === null) {
@@ -200,7 +201,7 @@ abstract class AbstractClient implements Api
         if ($this->apiKey) {
             $params[static::KEY_APIKEY] = $this->apiKey;
         } else {
-            throw new Exception('API key is not set ');
+            throw new Exception\MissingApiKeyException('API key is not set ');
         }
 
         if ($item instanceof Item) {
@@ -212,7 +213,7 @@ abstract class AbstractClient implements Api
         }
 
         if (is_array($item)) {
-            throw new Exception('$item require Item Object or Item array');
+            throw new Exception\InvalidArgumentException('$item require Item Object or Item array');
         }
 
         $path = sprintf(static::PATH_CREATE_ITEM, rawurlencode($databaseName));
@@ -231,7 +232,7 @@ abstract class AbstractClient implements Api
             $itemId = $item;
             $params['data'] = $data;
         } else {
-            throw new Exception();
+            throw new Exception\InvalidArgumentException('$item should be'.__NAMESPACE__.'\\Item object or string');
         }
 
         $path = sprintf(static::PATH_UPDATE_ITEM, $itemId);
@@ -241,8 +242,22 @@ abstract class AbstractClient implements Api
     /** @apikey */
     public function deleteItem($item)
     {
-        
+        if ($this->apiKey) {
+            $params[static::KEY_APIKEY] = $this->apiKey;
+        } else {
+            throw new Exception\MissingApiKeyException('API key is not set ');
+        }
 
+        if ($item instanceof Item) {
+            $itemId = $item->retrieveId();
+        } else if (is_string($itemId)) {
+            $itemId = $item;
+        } else {
+            throw new Exception\InvalidArgumentException('$item should be'.__NAMESPACE__.'\\Item object or string');
+        }
+        
+        $path = sprintf(static::PATH_DELETE_ITEM, $itemId);
+        return $this->makeRequest($path, 'DELETE', $params);
     }
 
     /**
