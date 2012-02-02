@@ -5,19 +5,19 @@ use Diggin\Service\Wedata\Storage,
     Diggin\Service\Wedata\Database,
     Diggin\Service\Wedata\CallbackFilterIterator,
     Diggin\Service\Wedata\Exception,
-    Zend\Cache\Storage\Adapter as StorageAdapter;
+    Zend\Cache\Storage\Adapter as CacheStorage;
 
 class Cache implements Storage
 {
     private $cachePrefix = 'diggin_wedata_';
 
-    private $storageAdapter;
+    private $cacheStorage;
 
     private $searchItemdataIgnore;
 
-    public function __construct(StorageAdapter $storageAdapter)
+    public function __construct(CacheStorage $cacheStorage)
     {
-        $this->storageAdapter = $storageAdapter;
+        $this->cacheStorage = $cacheStorage;
     }
     
     public function setSearchItemDataIgnore($callback)
@@ -29,11 +29,11 @@ class Cache implements Storage
     {
         $key = $this->filterCacheKey($database);
 
-        if(!$this->storageAdapter->hasItem($key)) {
+        if(!$this->cacheStorage->hasItem($key)) {
             throw new Exception\RuntimeException('not stored');
         }
 
-        return $this->storageAdapter->getItem($key);
+        return $this->cacheStorage->getItem($key);
     }
 
     /**
@@ -41,9 +41,9 @@ class Cache implements Storage
      */
     public function storeItems($database, $items)
     {
-        $key = $this->filterCacheKey($database);
+        $cachekey = $this->filterCacheKey($database);
 
-        $this->storageAdapter->setItem($key, $items);
+        $this->cacheStorage->setItem($cachekey, $items);
     }
 
     /**
@@ -51,13 +51,13 @@ class Cache implements Storage
      */
     public function searchItem($database, $name)
     {
-        $key = $this->filterCacheKey($database);
+        $cachekey = $this->filterCacheKey($database);
 
-        if (!$this->storageAdapter->hasItem($key)) {
+        if (!$this->cacheStorage->hasItem($cachekey)) {
             throw new Exception\RuntimeException('not stored');
         }
 
-        $items = $this->storageAdapter->getItem($key);
+        $items = $this->cacheStorage->getItem($cachekey);
 
         foreach ($items as $item) {
             if(preg_match('>'.$name.'>', $item->getName())) {
@@ -71,7 +71,12 @@ class Cache implements Storage
     public function searchItemData($database, $key, $term)
     {
         $cachekey = $this->filterCacheKey($database);
-        $items = $this->storageAdapter->getItem($cachekey);
+
+        if (!$this->cacheStorage->hasItem($cachekey)) {
+            throw new Exception\RuntimeException('not stored');
+        }
+
+        $items = $this->cacheStorage->getItem($cachekey);
 
         if ($this->searchItemdataIgnore) {
             $items = new CallbackFilterIterator($items, $this->searchItemdataIgnore);
@@ -79,7 +84,7 @@ class Cache implements Storage
 
         foreach ($items as $item) {
             $data = $item->getData();
-            if(preg_match('>'.$data->$key.'>', $term)) {
+            if(preg_match('#'.$data->$key.'#', $term)) {
                 return $item;
             }
         }
