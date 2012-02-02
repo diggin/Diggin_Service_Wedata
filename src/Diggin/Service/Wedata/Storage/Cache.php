@@ -84,7 +84,7 @@ class Cache implements Storage
 
         foreach ($items as $item) {
             $data = $item->getData();
-            if(preg_match('#'.$data->$key.'#', $term)) {
+            if(preg_match('>'.$data->$key.'>', $term)) {
                 return $item;
             }
         }
