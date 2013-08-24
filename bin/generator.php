@@ -1,7 +1,6 @@
 <?php
 //autoload zf2
-require_once dirname(__DIR__).'/_autoload.php';
-require_once 'client.php';
+require_once dirname(__DIR__).'/vendor/autoload.php';
 
 if (!$responseString = @file_get_contents($path = dirname(__DIR__).'/tmp/getDatabases.dat')) {
     echo 'require response at '.$path;

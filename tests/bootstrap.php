@@ -1,5 +1,6 @@
 <?php
+require_once dirname(__DIR__).'/vendor/autoload.php';
 
-error_reporting( E_ALL | E_STRICT );
-//require_once  dirname(__DIR__).'/src/Diggin/Service/Wedata/Autoload.php';
-require_once dirname(__DIR__).'/_autoload.php';
+defined('TESTS_DIGGIN_SERVICE_WEDATA_DATADIR') 
+    || define('TESTS_DIGGIN_SERVICE_WEDATA_DATADIR', dirname(__DIR__).'/data/tests');
+

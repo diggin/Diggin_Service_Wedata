@@ -1,8 +1,7 @@
 <?php
-//autoload zf2
-require_once dirname(__DIR__).'/_autoload.php';
+require_once dirname(__DIR__).'/vendor/autoload.php';
 
-use Diggin\Service\Wedata\Api\Client;
+use Diggin\Service\Wedata\Api\ZF2Client as Client;
 
 $ref = new ReflectionClass('Diggin\\Service\\Wedata\\Api');
 if (!isset($argv[1])) {

@@ -1,0 +1,25 @@
+{
+    "name": "diggin/diggin-service-wedata",
+    "description": "wedata (http://wedata.net) service api client.",
+    "require": {
+        "php": ">5.3.3",
+        "zendframework/zend-http": "2.2.*",
+        "zendframework/zend-json": "2.2.*"
+    },
+    "require-dev": {
+        "zendframework/zend-cache": "2.2.*",
+        "zendframework/zend-serializer": "2.2.*"
+    },
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "sasezaki",
+            "email": "sasezaki@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Diggin\\Service\\Wedata\\": "src"
+        }
+    }
+}

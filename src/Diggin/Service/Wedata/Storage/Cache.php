@@ -5,7 +5,7 @@ use Diggin\Service\Wedata\Storage,
     Diggin\Service\Wedata\Database,
     Diggin\Service\Wedata\CallbackFilterIterator,
     Diggin\Service\Wedata\Exception,
-    Zend\Cache\Storage\Adapter as CacheStorage;
+    Zend\Cache\Storage\StorageInterface as CacheStorage;
 
 class Cache implements Storage
 {

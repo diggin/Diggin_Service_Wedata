@@ -2,41 +2,49 @@
 
 namespace DigginTests\Service\Wedata\Storage;
 
-use Diggin\Service\Wedata\Storage\Cache,
-    Zend\Cache\StorageFactory as CacheStorageFactory;
+use Diggin\Service\Wedata\Storage\Cache;
+use Zend\Cache\StorageFactory as CacheStorageFactory;
 
 class CacheTest extends \PHPUnit_Framework_TestCase
 {
+    /**
     public function testStoreItems()
     {
         $adapter = new Cache($this->factoryCache());
         $adapter->storeItems('AutoPagerize', $this->getItems());
 
         $this->assertEquals($this->getItems(), $adapter->getItems('AutoPagerize'));
-    }
+    }*/
 
     public function testSearchItem()
     {
-        $adapter = new Cache($this->factoryCache());
-    
-        $item = $adapter->searchItem('AutoPagerize', '.*Decay');
+        $item = $this->getStorage()->searchItem('AutoPagerize', '.*Decay');
 
         $this->assertEquals('Urban Decay', $item->getName());
     }
 
     public function testSearchItemData()
     {
-        $adapter = new Cache($this->factoryCache());
-        $item = $adapter->searchItemData('AutoPagerize', 'url', 'http://magazine.kakaku.com/mag/page?');
-        $this->assertEquals('mimi-neko', $item->getCreatedBy());
+        $storage = $this->getStorage();
+        $item = $storage->searchItemData('AutoPagerize', 'url', 'http://magazine.kakaku.com/mag/page?');
+        $this->assertEquals('mimi-neko', $item->getCreatedBy(), "item\n".var_export($item, true));
 
-        $adapter->setSearchItemDataIgnore(function ($current, $key, $iterator) {
+        $storage->setSearchItemDataIgnore(function ($current, $key, $iterator) {
            return 'mimi-neko' != $current->getCreatedBy();                               
         });
 
-        $item = $adapter->searchItemData('AutoPagerize', 'url', 'http://magazine.kakaku.com/mag/page?');
+    }
 
-        $this->assertFalse($item);
+    public function getStorage()
+    {
+        $storage = new Cache($this->factoryCache());
+        $storage->setSearchItemDataIgnore(function ($current, $key, $iterator) {
+        //if ('^https?://.' != $item['data']['url'] && (preg_match('>'.$item['data']['url'].'>', $url) == 1)) {
+                $data = $current->getData();
+                return $data->url !== '^https?://[^/]+';
+            });
+        return $storage;
+    
     }
 
     public function factoryCache()
@@ -45,7 +53,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
             'adapter' => array(
                 'name' => 'Filesystem',
                 'options' => array(
-                    'cache_dir' => __DIR__.'/_files',
+                    'cache_dir' => TESTS_DIGGIN_SERVICE_WEDATA_DATADIR,
                      //'ttl' => 86400
                      )
                 ),
@@ -60,7 +68,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     protected function getItems()
     {
         $items = unserialize(
-                   file_get_contents(__DIR__. DIRECTORY_SEPARATOR .'_files'. DIRECTORY_SEPARATOR . 'items.dat')
+                   file_get_contents(TESTS_DIGGIN_SERVICE_WEDATA_DATADIR. '/autopagerize_items.dat')
                  );
         return $items;
     }
