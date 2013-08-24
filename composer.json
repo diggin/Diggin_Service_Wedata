@@ -1,6 +1,7 @@
 {
     "name": "diggin/diggin-service-wedata",
     "description": "wedata (http://wedata.net) service api client.",
+    "keywords":["wedata"],
     "require": {
         "php": ">5.3.3",
         "zendframework/zend-http": "2.2.*",
